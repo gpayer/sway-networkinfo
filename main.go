@@ -90,6 +90,8 @@ func main() {
 				rxUnit = "MB/s"
 			}
 
+			extraTooltip := ""
+
 			ifIcon := "󰛳"
 			if ac.Type == "802-11-wireless" {
 				ifIcon = ""
@@ -98,11 +100,12 @@ func main() {
 					errExit(err)
 				}
 				addr = ssid
+				extraTooltip = fmt.Sprintf(", SSID: %s", ssid)
 			}
 
 			out := map[string]interface{}{
 				"text":    fmt.Sprintf("%.1f%s %.1f%s %s %s ", rx, rxUnit, tx, txUnit, addr, ifIcon),
-				"tooltip": fmt.Sprintf("Interface: %s, Type: %s", iface, ac.Type),
+				"tooltip": fmt.Sprintf("Interface: %s, Type: %s%s", iface, ac.Type, extraTooltip),
 			}
 			encJson, err := json.Marshal(out)
 			if err != nil {
@@ -221,13 +224,15 @@ func getDeviceSsid(conn *dbus.Conn, devicePath dbus.ObjectPath) (string, error) 
 		return "", err
 	}
 
-	var ssid string
-	err = device.StoreProperty("org.freedesktop.NetworkManager.AccessPoint", &ssid)
+	accessPointObj := conn.Object("org.freedesktop.NetworkManager", accessPoint)
+
+	var ssid []byte
+	err = accessPointObj.StoreProperty("org.freedesktop.NetworkManager.AccessPoint.Ssid", &ssid)
 	if err != nil {
 		return "", err
 	}
 
-	return ssid, nil
+	return string(ssid), nil
 }
 
 func getTransferredBytes(typ string, dev string) (uint64, error) {
