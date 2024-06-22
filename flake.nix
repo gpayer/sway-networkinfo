@@ -22,7 +22,7 @@
     };
   in {
     packages = eachSystem (pkgs: let nwinfo = networkinfo pkgs; in {
-      networkinfo = nwinfo;
+      sway-networkinfo = nwinfo;
       default = nwinfo;
     });
 
