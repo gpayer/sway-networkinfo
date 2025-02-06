@@ -8,7 +8,7 @@
     systems,
     nixpkgs,
     ...
-  } @ inputs: let
+  }: let
     eachSystem = f:
       nixpkgs.lib.genAttrs (import systems) (
         system:
@@ -17,6 +17,7 @@
     networkinfo = pkgs: pkgs.buildGoModule {
       pname = "networkinfo";
       version = "0.1.0";
+      CGO_ENABLED = "0";
       src = ./.;
       vendorHash = null;
     };
@@ -26,12 +27,11 @@
       default = nwinfo;
     });
 
-    # devShells = eachSystem (pkgs: {
-    #   default = pkgs.mkShell {
-    #     buildInputs = with pkgs; [
-    #       # Add development dependencies here
-    #     ];
-    #   };
-    # });
+    devShells = eachSystem (pkgs: {
+      default = with pkgs; mkShell {
+        packages = [ go ];
+        CGO_ENABLED = "0";
+      };
+    });
   };
 }
