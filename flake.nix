@@ -30,7 +30,9 @@
     devShells = eachSystem (pkgs: {
       default = with pkgs; mkShell {
         packages = [ go ];
-        CGO_ENABLED = "0";
+        env = {
+          CGO_ENABLED = "0";
+        };
       };
     });
   };
