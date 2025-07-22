@@ -17,7 +17,9 @@
     networkinfo = pkgs: pkgs.buildGoModule {
       pname = "networkinfo";
       version = "0.1.0";
-      CGO_ENABLED = "0";
+      env = {
+        CGO_ENABLED = "0";
+      };
       src = ./.;
       vendorHash = null;
     };
